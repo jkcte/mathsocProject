@@ -1,2 +1,0 @@
-# mathsocProject
-Math soc Website
