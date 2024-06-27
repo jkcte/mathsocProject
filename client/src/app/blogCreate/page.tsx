@@ -2,31 +2,36 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
-import '../../../node_modules/latex.js'
-
+import "../../../node_modules/latex.js/dist/latex.mjs"  
 
 function splits(input: string, separators: string[]): string[] {
     return input.split(new RegExp(separators.join("|"), "g"));
   }
 
-function latexModifier(text: string): string{
-    const { parse, HtmlGenerator } = require('latex.js')
+function latexModifier(text: string): Element{
+  
+  const { parse, HtmlGenerator } = require('latex.js')
     const { createHTMLWindow } = require('svgdom')
 
     global.window = createHTMLWindow()
     global.document = window.document
 
-
-    let latex = "Hi, this is a line of text."
-
     let generator = new HtmlGenerator({ hyphenate: false })
 
-    let doc = parse(latex, { generator: generator }).htmlDocument()
+    let doc = parse(text, { generator: generator }).htmlDocument()
     return doc.documentElement.outerHTML
 }
 
-function codeModifier(text: string): string{
-    return ""
+function codeModifier(text: string): JSX.Element{
+
+  return (
+    <div className="bg-[#1e1e1e] rounded-md overflow-hidden">
+      <div className="bg-[#2d2d2d] px-4 py-2 text-sm font-medium text-[#d4d4d4]">JavaScript</div>
+      <p className="p-4 font-mono text-[#d4d4d4]">
+        <code>{text}</code>
+      </p>
+    </div>
+  )
 }
 
 function extractTextByOrder(text: string): string[] {
@@ -59,26 +64,29 @@ console.log('Text between <str> tags:', extractedText.str);
 console.log('Text between <mtr> tags:', extractedText.mtr);
 */
 
-function textConverter(text: string) {
+function textConverter(text: string): JSX.Element {
     var isLatex = text.match(/<latex>/);
     var isCode = text.match(/<codeblock/);
     var latexAndCode = [];
 
-    //slice after ng <latex> and before ng <latex>
-    if (!isCode || !isLatex) return text;
-    // <latex> </latex>
+    if (!isCode || !isLatex) {
+      return (<p>{text}</p>);
+    }
     var textArr = []
     const textOrder = extractTextByOrder(text)
     textArr = splits(text, ["<latex>", "</latex>", "<codeblock>", "</codeblock>"]);
     var order
+    var elementArr = [];
     for (let index = 1; index < textArr.length; index =+ 2) {
-        order = (index - 1)/2
-        if (textOrder[order] == 'latex') textArr[index] = latexModifier(textArr[index]);
-        if (textOrder[order] == 'codeblock') textArr[index] = codeModifier(textArr[index]);
+        if (index % 2 == 0) elementArr.push(<p>{textArr[index]}</p>)
+        else {
+          order = (index - 1)/2
+        if (textOrder[order] == 'latex') elementArr.push(latexModifier(textArr[index]));
+        if (textOrder[order] == 'codeblock') elementArr.push(codeModifier(textArr[index]));
+    
+      }
     }
-    return textArr.toString()
-    //[latex, latex, codeblock]
-    //["Hello World", "str", "hee", "str", "", "", "s"]
+    return (<p></p>)
 }
 
 export default function Component() {
