@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import "../../../node_modules/latex.js/dist/latex.mjs"  
+import 'svgdom'
 
 function splits(input: string, separators: string[]): string[] {
     return input.split(new RegExp(separators.join("|"), "g"));
