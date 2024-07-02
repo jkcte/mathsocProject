@@ -2,25 +2,15 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
-import "../../../node_modules/latex.js/dist/latex.mjs"  
-import 'svgdom'
+import 'katex/dist/katex.min.css';
+import Latex from 'react-latex-next';
 
 function splits(input: string, separators: string[]): string[] {
     return input.split(new RegExp(separators.join("|"), "g"));
   }
 
-function latexModifier(text: string): Element{
-  
-  const { parse, HtmlGenerator } = require('latex.js')
-    const { createHTMLWindow } = require('svgdom')
-
-    global.window = createHTMLWindow()
-    global.document = window.document
-
-    let generator = new HtmlGenerator({ hyphenate: false })
-
-    let doc = parse(text, { generator: generator }).htmlDocument()
-    return doc.documentElement.outerHTML
+function latexModifier(text: string): JSX.Element{
+  return (<><Latex>{text}</Latex></>)
 }
 
 function codeModifier(text: string): JSX.Element{
@@ -93,11 +83,11 @@ function textConverter(text: string): JSX.Element {
 export default function Component() {
     var text = `
   Here is some text.
-  <str>hello</str><mtr>hello</mtr>
+  <latex>hello</latex><codeblock>hello</codeblock>
   Some more text.
-  <mtr>This is another string</mtr>
+  <codeblock>This is another string</codeblock>
   And even more text.
-  <str>This is a second string</str>
+  <latex>This is a second string</latex>
 `;
     return (
     <div className="w-full max-w-4xl mx-auto py-12 px-4 md:px-6 lg:px-8">
